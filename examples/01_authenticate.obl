@@ -1,0 +1,26 @@
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+-- Oblibeny Security-Critical Example
+
+-- Security-critical function with timing bound
+@security_level(critical)
+@timing_bound(100us)
+fn authenticate(credential: Credential) -> AuthResult:
+    -- Constant-time comparison (prevents timing attacks)
+    @constant_time
+    let valid = secure_compare(credential.hash, stored_hash)
+    if valid then AuthResult.Success else AuthResult.Failure
+
+-- Stack-only allocation (no heap for security)
+@no_heap
+fn process_packet(packet: &[u8; 256]) -> Response:
+    let mut buffer: [u8; 64] @stack
+    -- Bounds checked at compile time
+    copy(packet[0..64], buffer)
+    parse(buffer)
+
+-- Verified function with proof
+@verified
+@ensures(result >= 0)
+@ensures(result <= input)
+fn clamp_positive(input: i32) -> i32:
+    if input < 0 then 0 else input
