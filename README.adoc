@@ -1,0 +1,84 @@
+= Oblibeny Playground
+:toc: macro
+:icons: font
+
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+image:https://img.shields.io/badge/Language-Oblíbený-orange[Oblíbený]
+image:https://img.shields.io/badge/Focus-Embedded%20Security-red[Embedded]
+image:https://img.shields.io/badge/License-AGPL--3.0-blue[License]
+
+*Playground for Oblíbený - Security-Critical Embedded Systems Language*
+
+toc::[]
+
+== Overview
+
+Oblíbený (Czech: "beloved/favorite") is designed for security-critical embedded systems where reliability and safety are paramount.
+
+=== Key Features
+
+* **Formal Verification**: Prove code correctness
+* **Memory Safety**: No buffer overflows, use-after-free
+* **Timing Guarantees**: WCET analysis
+* **Secure by Default**: Security built into the language
+
+== Language Design
+
+=== Security Annotations
+
+[source,oblibeny]
+----
+-- Security-critical function
+@security_level(critical)
+@timing_bound(100us)
+fn authenticate(credential: Credential) -> AuthResult:
+    -- Constant-time comparison (no timing attacks)
+    @constant_time
+    let valid = secure_compare(credential.hash, stored_hash)
+    if valid then AuthResult.Success else AuthResult.Failure
+----
+
+=== Memory Safety
+
+[source,oblibeny]
+----
+-- Stack-only allocation (no heap)
+@no_heap
+fn process_packet(packet: &[u8; 256]) -> Response:
+    let mut buffer: [u8; 64] @stack
+    -- Bounds checked at compile time
+    copy(packet[0..64], buffer)
+    parse(buffer)
+----
+
+=== Formal Verification
+
+[source,oblibeny]
+----
+-- Verified function
+@verified
+@ensures(result >= 0)
+@ensures(result <= input)
+fn clamp_positive(input: i32) -> i32:
+    if input < 0 then 0 else input
+----
+
+== Getting Started
+
+[source,bash]
+----
+guix install oblibeny
+oblibeny build --verify firmware.obl
+oblibeny flash --target=arm-cortex-m4
+----
+
+== Examples
+
+* `crypto/` - Cryptographic primitives
+* `bootloader/` - Secure boot examples
+* `protocols/` - Security protocol implementations
+
+== License
+
+SPDX-License-Identifier: AGPL-3.0-or-later
