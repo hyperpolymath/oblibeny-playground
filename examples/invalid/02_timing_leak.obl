@@ -1,0 +1,25 @@
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+-- INVALID: Timing side-channel vulnerability (should fail verification)
+-- ERROR: timing_leak - non-constant-time comparison
+
+-- Security function WITHOUT constant-time annotation
+@security_level(critical)
+fn insecure_compare(a: &[u8; 32], b: &[u8; 32]) -> bool:
+    -- ERROR: Early return creates timing_leak
+    -- Attacker can measure time to determine match position
+    for i in 0..32:
+        if a[i] != b[i]:
+            return false  -- timing_leak: early exit reveals information
+    return true
+
+-- Password check vulnerable to timing attacks
+@security_level(critical)
+fn check_password(input: &[u8], stored: &[u8]) -> bool:
+    -- Missing @constant_time annotation
+    -- Variable-time comparison is a timing_leak
+    if len(input) != len(stored):
+        return false  -- timing_leak: length oracle
+    for i in 0..len(input):
+        if input[i] != stored[i]:
+            return false  -- timing_leak: byte-by-byte oracle
+    return true

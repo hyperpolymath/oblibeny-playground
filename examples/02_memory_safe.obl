@@ -1,0 +1,29 @@
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+-- Memory Safety Example for Oblíbený
+
+-- Secure buffer handling with compile-time bounds checking
+@no_heap
+@verified
+fn secure_copy(src: &[u8; 64], dst: &mut [u8; 64]) -> Unit:
+    -- Bounds are statically verified
+    @ensures(forall i: 0..64. dst[i] == src[i])
+    for i in 0..64:
+        dst[i] = src[i]
+
+-- Stack-only cryptographic operation
+@security_level(critical)
+@no_heap
+@timing_bound(50us)
+fn xor_block(a: &[u8; 16], b: &[u8; 16], out: &mut [u8; 16]) -> Unit:
+    @constant_time
+    for i in 0..16:
+        out[i] = a[i] ^ b[i]
+
+-- Verified array access with proof obligations
+@verified
+@ensures(result < len)
+@ensures(result >= 0)
+fn safe_index(idx: i32, len: i32) -> i32:
+    if idx < 0 then 0
+    else if idx >= len then len - 1
+    else idx
