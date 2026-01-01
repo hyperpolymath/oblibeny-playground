@@ -1,0 +1,16 @@
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+-- INVALID: Buffer overflow example (should fail verification)
+-- ERROR: buffer_overflow - accessing beyond bounds
+
+-- This function has a buffer overflow vulnerability
+fn unsafe_copy(src: &[u8; 128], dst: &mut [u8; 64]) -> Unit:
+    -- ERROR: Copying 128 bytes into 64-byte buffer
+    -- This would cause buffer_overflow in a real verifier
+    for i in 0..128:
+        dst[i] = src[i]  -- buffer_overflow: index exceeds dst bounds
+
+-- Missing @no_heap annotation on security-critical function
+fn process_secret(data: &[u8]) -> Unit:
+    -- Heap allocation in security context is forbidden
+    let buffer = heap_alloc(1024)  -- buffer_overflow risk
+    copy(data, buffer)

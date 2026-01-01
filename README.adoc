@@ -66,11 +66,26 @@ fn clamp_positive(input: i32) -> i32:
 
 == Getting Started
 
+NOTE: This section is *illustrative* of the intended workflow. The `oblibeny` toolchain is not yet packaged. See the playground demos below for what works today.
+
+.Future Installation (not yet available)
 [source,bash]
 ----
+# Illustrative only - toolchain not yet packaged
 guix install oblibeny
 oblibeny build --verify firmware.obl
 oblibeny flash --target=arm-cortex-m4
+----
+
+=== What Works Now
+
+Run the playground demos using https://just.systems[just]:
+
+[source,bash]
+----
+just --list    # Show available targets
+just demo      # Run verification demo (offline)
+just test      # Run example corpus tests
 ----
 
 == Examples
