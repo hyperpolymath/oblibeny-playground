@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# mustfile.toml - Configuration for Must
+# Task runner + template engine + enforcer
+# See: https://github.com/hyperpolymath/mustfile
+
+schema = "0.1"
+
+[project]
+name = "oblibeny-playground"
+version = "0.1.0"
+license = "AGPL-3.0-or-later"
+author = "Jonathan D.A. Jewell"
+description = "Teaching playground for Oblíbený - security-critical embedded systems"
+
+[variables]
+copyright = "Copyright (C) 2025 Jonathan D.A. Jewell"
+license = "AGPL-3.0-or-later"
+registry = "ghcr.io/hyperpolymath"
+
+# Task definitions (delegate to just)
+[tasks]
+
+[tasks.demo]
+description = "Run verification demo"
+commands = ["just demo"]
+
+[tasks.test]
+description = "Run test suite"
+commands = ["just test"]
+
+[tasks.clean]
+description = "Clean build artifacts"
+commands = ["just clean"]
+
+[tasks.check]
+description = "Check syntax of all files"
+commands = ["just check"]
+
+[tasks.verify]
+description = "Verify a specific file"
+commands = ["just verify"]
+
+[tasks.lint]
+description = "Lint code"
+commands = ["just lint"]
+
+[tasks.fmt]
+description = "Format code"
+commands = ["just fmt"]
+
+# Requirements enforcement - Physical State contract
+[requirements]
+must_have = [
+    "LICENSE",
+    "README.adoc",
+    "SECURITY.md",
+    "justfile",
+    "Mustfile",
+    "mustfile.toml",
+    "config.ncl",
+    "src/",
+    "examples/",
+    "test/",
+]
+
+must_not_have = [
+    "Makefile",
+    "Dockerfile",
+    ".env",
+    "package-lock.json",
+    "yarn.lock",
+    "bun.lockb",
+    "tsconfig.json",
+]
+
+# Content requirements
+[requirements.content]
+"LICENSE" = ["GNU Affero General Public License"]
+
+# Enforcement rules
+[enforcement]
+license = "AGPL-3.0-or-later"
+copyright_holder = "Jonathan D.A. Jewell"
+podman_not_docker = true
+gitlab_not_github = false
+
+[enforcement.checks]
+no_trailing_whitespace = true
+no_tabs = false
+unix_line_endings = true
+max_line_length = 120

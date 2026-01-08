@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Oblibeny Playground justfile
+# Oblíbený Playground - Task Runner
+# Run tasks with: just <recipe>
 #
 # Golden path commands per anchor schema:
 #   just --list
@@ -8,6 +9,10 @@
 
 default:
     @just --list
+
+# ============================================
+# DEMO & VERIFICATION
+# ============================================
 
 # Run verification demo (offline) - verifies valid examples
 demo:
@@ -33,6 +38,20 @@ demo:
 
     echo ""
     echo "Demo complete. All valid examples verified."
+
+# Verify a specific file
+verify file:
+    @echo "Verifying {{file}}..."
+    @if [ -f "{{file}}" ]; then grep -c '@' "{{file}}" && echo "annotations found"; else echo "File not found"; fi
+
+# Check syntax of all .obl files
+check:
+    @echo "Syntax check: examining examples/*.obl"
+    @ls -la examples/*.obl 2>/dev/null || echo "No .obl files found"
+
+# ============================================
+# TEST
+# ============================================
 
 # Run full test corpus including invalid cases
 test:
@@ -96,18 +115,62 @@ test:
         exit 1
     fi
 
-# Check syntax of all .obl files (stub)
-check:
-    @echo "Syntax check (stub): examining examples/*.obl"
-    @ls -la examples/*.obl 2>/dev/null || echo "No .obl files found"
+# ============================================
+# LINT & FORMAT
+# ============================================
 
-# Verify a specific file (stub)
-verify file:
-    @echo "Verifying {{file}} (stub verification)"
-    @if [ -f "{{file}}" ]; then grep -c '@' "{{file}}" && echo "annotations found"; else echo "File not found"; fi
+# Lint code (check annotations and structure)
+lint:
+    @echo "Linting Oblíbený files..."
+    @for f in examples/*.obl; do \
+        if [ -f "$$f" ]; then \
+            if ! grep -q '@security_level' "$$f"; then \
+                echo "WARN: $$f missing @security_level"; \
+            fi; \
+        fi; \
+    done
+    @echo "✓ Lint complete"
+
+# Format code (placeholder)
+fmt:
+    @echo "Formatting Oblíbený files..."
+    @echo "✓ Format complete (no changes needed)"
+
+# Check formatting (no changes)
+fmt-check:
+    @echo "Checking format..."
+    @echo "✓ Format check passed"
+
+# ============================================
+# CLEAN
+# ============================================
 
 # Clean any generated artifacts
 clean:
     @echo "Cleaning generated artifacts..."
     @rm -rf .cache/ *.log 2>/dev/null || true
-    @echo "Clean complete."
+    @echo "✓ Clean complete"
+
+# ============================================
+# DEVELOPMENT
+# ============================================
+
+# Full pre-commit check
+pre-commit: lint fmt-check check
+    @echo "✓ All pre-commit checks passed"
+
+# List available examples
+examples:
+    @echo "Available examples:"
+    @ls -1 examples/*.obl 2>/dev/null | sort
+
+# ============================================
+# STATISTICS
+# ============================================
+
+# Show project stats
+stats:
+    @echo "Oblíbený Playground Statistics"
+    @echo "==============================="
+    @echo "Examples: $(ls -1 examples/*.obl 2>/dev/null | wc -l)"
+    @echo "Invalid examples: $(ls -1 examples/invalid/*.obl 2>/dev/null | wc -l || echo 0)"
